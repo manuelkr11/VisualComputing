@@ -33,10 +33,25 @@ def convert_to_pointcloud(points, colors):
     return point_cloud
 
 
+def visualisation(point_cloud, point_size=2):
+    # Create a visualizer object
+    visualizer = o3d.visualization.Visualizer()
+    visualizer.create_window()
+    # Add the PointCloud to the visualizer
+    visualizer.add_geometry(point_cloud)
+    # Get the rendering option and modify the point size
+    render_option = visualizer.get_render_option()
+    render_option.point_size = point_size  # Set point size
+    # Run the visualizer
+    visualizer.run()
+    visualizer.destroy_window()
+
+
 if __name__ == '__main__':
+    point_size = 2
     # Loading data from model.pts file
     points, colors = load_points('model.pts')
     # Converting the numpy arrays to a point_cloud
     point_cloud = convert_to_pointcloud(points, colors)
     # Visualisation using the Open3D library
-    o3d.visualization.draw_geometries([point_cloud])
+    visualisation(point_cloud, point_size)
