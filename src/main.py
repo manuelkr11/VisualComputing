@@ -2,7 +2,7 @@
 import os
 import open3d as o3d
 import numpy as np
-from sklearn.cluster import DBSCAN
+from preprocessing import preprocessing
 
 
 def load_points(file_name):
@@ -33,17 +33,8 @@ def convert_to_pointcloud(points, colors):
     print("PointCloud created!")
     return point_cloud
 
-def preprocessing(points, colors):
-    eps = 0.3
-    min_samples = 10
-    dbscan = DBSCAN(eps=eps, min_samples=min_samples)
-    labels = dbscan.fit_predict(points)
-    outlier_indices = np.where(labels == -1)[0]
-    points = np.delete(points, outlier_indices, axis=0)
-    colors = np.delete(colors, outlier_indices, axis=0)
-    return points, colors
 
-def visualisation(point_cloud, point_size=2):
+def visualisation(point_cloud, point_size=2, zoom=False):
     # Create a visualizer object
     visualizer = o3d.visualization.Visualizer()
     visualizer.create_window()
@@ -52,6 +43,11 @@ def visualisation(point_cloud, point_size=2):
     # Get the rendering option and modify the point size
     render_option = visualizer.get_render_option()
     render_option.point_size = point_size  # Set point size
+    # Set camera (used for comparison pictures in document)
+    if zoom:
+        ctr = visualizer.get_view_control()
+        parameters = o3d.io.read_pinhole_camera_parameters("data\\ScreenCamera_01.json")
+        ctr.convert_from_pinhole_camera_parameters(parameters)
     # Run the visualizer
     visualizer.run()
     visualizer.destroy_window()
@@ -61,9 +57,9 @@ if __name__ == '__main__':
     point_size = 2
     # Loading data from model.pts file
     points, colors = load_points('model.pts')
-    # Preprocessing, only in comments because of memory error on laptop
-    # points, colors = preprocessing(points, colors)
+    # Preprocessing
+    points, colors = preprocessing(points, colors, eps=0.05, min_samples=40, subset_size=10000)
     # Converting the numpy arrays to a point_cloud
     point_cloud = convert_to_pointcloud(points, colors)
-    # Visualisation using the Open3D library
-    visualisation(point_cloud, point_size)
+    # Visualisation using the Open3D library, zoom=True will put camera in front of dinosaur
+    visualisation(point_cloud, point_size=point_size, zoom=False)
