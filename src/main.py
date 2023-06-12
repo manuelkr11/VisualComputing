@@ -2,6 +2,7 @@
 import os
 import open3d as o3d
 import numpy as np
+from sklearn.cluster import DBSCAN
 
 
 def load_points(file_name):
@@ -32,6 +33,15 @@ def convert_to_pointcloud(points, colors):
     print("PointCloud created!")
     return point_cloud
 
+def preprocessing(points, colors):
+    eps = 0.3
+    min_samples = 10
+    dbscan = DBSCAN(eps=eps, min_samples=min_samples)
+    labels = dbscan.fit_predict(points)
+    outlier_indices = np.where(labels == -1)[0]
+    points = np.delete(points, outlier_indices, axis=0)
+    colors = np.delete(colors, outlier_indices, axis=0)
+    return points, colors
 
 def visualisation(point_cloud, point_size=2):
     # Create a visualizer object
@@ -51,6 +61,8 @@ if __name__ == '__main__':
     point_size = 2
     # Loading data from model.pts file
     points, colors = load_points('model.pts')
+    # Preprocessing, only in comments because of memory error on laptop
+    # points, colors = preprocessing(points, colors)
     # Converting the numpy arrays to a point_cloud
     point_cloud = convert_to_pointcloud(points, colors)
     # Visualisation using the Open3D library
