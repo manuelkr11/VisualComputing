@@ -2,7 +2,7 @@
 
 ## Exercises chosen
 
-This is the submission of Exercises 1 (Ray Casting in ShaderToy) and 3 (Point Cloud Rendering) by Manuel Kranzl (ai22m038).
+This is the submission of Exercises 1 (Ray Casting in ShaderToy) and 3 (Point Cloud Rendering).
 
 Both papers can be found in the `submission` folder.
 
